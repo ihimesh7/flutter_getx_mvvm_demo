@@ -4,7 +4,7 @@ import 'package:getx_mvvm_demo/APIService/cat_api_service.dart';
 import 'package:getx_mvvm_demo/Model/cat.dart';
 
 class CatViewModel extends GetxController {
-  final _apiService = CatApiService();
+  late CatApiService apiService = CatApiService();
   final _cat = Cat(url: '').obs;
   final _isLoading = false.obs;
   final _hasError = false.obs;
@@ -25,7 +25,7 @@ class CatViewModel extends GetxController {
     _hasError.value = false;
 
     try {
-      final cat = await _apiService.getRandomCat();
+      final cat = await apiService.getRandomCat();
       _cat.value = cat;
     } on Exception catch (e) {
       _hasError.value = true;

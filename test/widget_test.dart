@@ -1,30 +1,46 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:getx_mvvm_demo/main.dart';
+import 'package:get/get.dart';
+import 'package:getx_mvvm_demo/View/login_page.dart';
+import 'package:getx_mvvm_demo/ViewModel/auth_viewmodel.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('LoginPage', () {
+    testWidgets('renders correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(GetMaterialApp(home: LoginPage()));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(find.text('Login'), findsNWidgets(2));
+      expect(find.byType(TextFormField), findsNWidgets(2));
+      expect(find.byType(ElevatedButton), findsNWidgets(1));
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets('email field updates correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(GetMaterialApp(home: LoginPage()));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      final emailField = find.byKey(const Key('Email'));
+      await tester.enterText(emailField, 'test@example.com');
+
+      final emailState = Get.find<EmailState>();
+      expect(emailState.email.value, 'test@example.com');
+    });
+
+    testWidgets('password field updates correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(GetMaterialApp(home: LoginPage()));
+
+      final passwordField = find.byKey(const Key('Password'));
+      await tester.enterText(passwordField, 'MyP@ssw0rd');
+
+      final passwordState = Get.find<PasswordState>();
+      expect(passwordState.password.value, 'MyP@ssw0rd');
+    });
+
+    testWidgets('login button triggers submission', (WidgetTester tester) async {
+      await tester.pumpWidget(GetMaterialApp(home: LoginPage()));
+
+      final loginButton = find.byType(ElevatedButton);
+      await tester.tap(loginButton);
+
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
   });
 }
